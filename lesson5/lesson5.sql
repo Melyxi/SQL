@@ -37,7 +37,7 @@ INSERT INTO users(firstname, created_at, update_at) VALUES
  сохранив введеные ранее значения.
  */
  
-use dota;
+
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -69,7 +69,7 @@ ALTER TABLE users MODIFY created_at DATETIME, MODIFY updated_at DATETIME;
   нулевые запасы должны выводиться в конце, после всех записей.
 */
 
-use dota;
+
 
 DROP TABLE IF EXISTS storehouses_products;
 CREATE TABLE storehouses_products (
