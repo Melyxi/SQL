@@ -1,6 +1,6 @@
 
--- DROP DATABASE IF EXISTS website;
--- CREATE DATABASE website;
+DROP DATABASE IF EXISTS website;
+CREATE DATABASE website;
 
 USE website;
 
@@ -37,7 +37,7 @@ CREATE TABLE profile(
 
 DROP TABLE IF EXISTS matches;
 CREATE TABLE matches(
-	match_id int not null,
+	match_id int UNSIGNED NOT NULL UNIQUE,
 	create_match DATETIME default now(),
 	start_game datetime not NULL,
 	stop_game datetime default 0,
@@ -63,8 +63,9 @@ CREATE TABLE matches(
 	KEY index_of_logo_id_radiant(team_logo_radiant),
 	KEY index_of_logo_id_dire (team_logo_dire),
 	KEY index_of_team_id_radiant (team_id_radiant),
-	KEY index_of_team_id_dire (team_logo_dire)
-
+	KEY index_of_team_id_dire (team_id_dire),
+	KEY index_match_id (match_id)
+	
 );
 
 
@@ -75,14 +76,14 @@ CREATE TABLE teams(
 	team_id INT UNSIGNED NOT NULL,
 	name varchar(100) UNIQUE,
 	logo INT UNSIGNED NOT NULL,
-	logo_url varchar(255) UNIQUE KEY,  -- название файла
+	logo_url varchar(255) ,  -- название файла
 	
 	
 	
 	FOREIGN KEY (logo) REFERENCES matches(team_logo_radiant),
 	FOREIGN KEY (logo) REFERENCES matches(team_logo_dire),
-	FOREIGN KEY (team_id) REFERENCES matches(team_logo_radiant),
-	FOREIGN KEY (team_id) REFERENCES matches(team_logo_dire)
+	FOREIGN KEY (team_id) REFERENCES matches(team_id_radiant),
+	FOREIGN KEY (team_id) REFERENCES matches(team_id_dire)
 	
 	ON UPDATE CASCADE
 	ON DELETE CASCADE
@@ -97,6 +98,36 @@ CREATE TABLE players(
 );
 
 -- таблица чатов, на каждый матч есть свой чат 
+
+DROP TABLE IF EXISTS chat;
+CREATE TABLE chat(
+	chat_id SERIAL PRIMARY KEY,
+	name_chat varchar(100) UNIQUE,
+	chat_match_id int UNSIGNED NOT NULL UNIQUE,
+	create_at DATETIME DEFAULT NOW(),
+	
+	-- KEY index_match_id (match_id)
+	FOREIGN KEY (chat_match_id) REFERENCES matches(match_id)
+	
+);
+
+-- таблица сообщений 
+DROP TABLE IF EXISTS message;
+CREATE TABLE message(
+	message_id SERIAL PRIMARY KEY,
+	message_chat_id BIGINT UNSIGNED NOT NULL,
+	from_user_id BIGINT UNSIGNED NOT NULL,
+	create_at DATETIME DEFAULT NOW(),
+	
+	FOREIGN KEY (message_chat_id) REFERENCES chat(chat_id),
+	FOREIGN KEY (from_user_id) REFERENCES auth_user(id)
+
+);	
+
+-- таблица транзакций, на сайте будет присутствовать платная подписка 
+
+
+-- таблица коэффициентов 
 
 
 
